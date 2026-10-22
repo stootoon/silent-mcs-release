@@ -133,7 +133,7 @@ def fig_learning(d=None):
     # time ticks.
     gs = GridSpec(5, 4, height_ratios=[0.4, 0.22, 1, 0.22, 1],
                   hspace=0.0, wspace=0.16, left=0.115, right=0.98, top=0.92, bottom=0.12)
-    row_lab = {0: "Odour", 2: "GC", 4: "MC"}
+    row_lab = {0: "Odour", 2: "GC (a.u.)", 4: "MC (a.u.)"}
     block_ax = {}       # left-column axis of each plot row, for A/B/C labels
 
     def ylab(ax, r, j):

@@ -95,7 +95,7 @@ def fig_dynamics(d=None):
     gs = GridSpec(9, 4, height_ratios=[0.4, 0.41, 1, 0.22, 1, 0.48, 1, 0.22, 1],
                   hspace=0.0, wspace=0.16, left=0.115, right=0.98, top=0.96, bottom=0.08)
     block_ax = {}       # left-column axis of each plot row, for EARLY/LATE block labels
-    row_lab = ["Odour", "GC", "MC", "GC", "MC"]      # early/late conveyed by block labels
+    row_lab = ["Odour", "GC (a.u.)", "MC (a.u.)", "GC (a.u.)", "MC (a.u.)"]      # early/late conveyed by block labels
 
     def snippet(on):
         sl = slice(on - n_pre, on + n_post)
@@ -163,7 +163,7 @@ def fig_dynamics(d=None):
     for (r_top, r_bot), name in [((2, 4), "EARLY"), ((6, 8), "LATE")]:
         y_top = block_ax[r_top].get_position().y1
         y_bot = block_ax[r_bot].get_position().y0
-        fig.text(0.050, 0.5 * (y_top + y_bot), name, rotation=90, fontsize=10,
+        fig.text(0.036, 0.5 * (y_top + y_bot), name, rotation=90, fontsize=10,
                  fontstyle="italic", va="center", ha="center")
     # panel letters: A = Odour row, B = Early block, C = Late block. A sits above
     # the odour row (clear of its label); B and C are centred on the tops of their
