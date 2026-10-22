@@ -1,0 +1,4 @@
+numpy
+matplotlib
+# scipy is optional (only for figures.whiskers_stats).
+# tqdm is optional (progress bar only); the code runs without it.
