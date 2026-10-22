@@ -164,13 +164,13 @@ def fig_dynamics(d=None):
         y_top = block_ax[r_top].get_position().y1
         y_bot = block_ax[r_bot].get_position().y0
         fig.text(0.050, 0.5 * (y_top + y_bot), name, rotation=90, fontsize=10,
-                 fontweight="bold", va="center", ha="center")
+                 fontweight="bold", fontstyle="italic", va="center", ha="center")
     # panel letters: A = Odour row, B = Early block, C = Late block. A sits above
     # the odour row (clear of its label); B and C are centred on the tops of their
     # GC plots.
     for r0, letter, va, dy in [(0, "A", "bottom", 0.013), (2, "B", "center", 0.0),
                                (6, "C", "center", 0.0)]:
-        fig.text(0.038, block_ax[r0].get_position().y1 + dy, letter, fontsize=15,
+        fig.text(0.038, block_ax[r0].get_position().y1 + dy, letter, fontsize=10.5,
                  fontweight="bold", va=va, ha="left")
     return fig
 

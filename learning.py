@@ -191,7 +191,7 @@ def fig_learning(d=None):
     # its label); B and C are centred on the tops of their plots.
     for r0, letter, va, dy in [(0, "A", "bottom", 0.013), (2, "B", "center", 0.0),
                                (4, "C", "center", 0.0)]:
-        fig.text(0.030, block_ax[r0].get_position().y1 + dy, letter, fontsize=15,
+        fig.text(0.030, block_ax[r0].get_position().y1 + dy, letter, fontsize=10.5,
                  fontweight="bold", va=va, ha="left")
     return fig
 

@@ -19,7 +19,7 @@ def _label(ax, s, top=None):
     fig._panel_labels.append((ax, s, top))
 
 
-def _flush_labels(fig, row_tol=0.08):
+def _flush_labels(fig, row_tol=0.08, size=14, dy=0.0):
     """Draw queued panel letters at the top-left of each panel: left-aligned with
     the panel's outer left edge (tick labels and axis label included), and raised
     above any tick/axis label that pokes out of the top. Letters in the same row
@@ -38,7 +38,7 @@ def _flush_labels(fig, row_tol=0.08):
     for p in placed:                                     # align letters row-wise
         p[1] = max(q[1] for q in placed if abs(q[1] - p[1]) < row_tol)
     for x0, y, s in placed:
-        fig.text(x0, y, s, fontsize=14, fontweight="bold", va="bottom", ha="left")
+        fig.text(x0, y + dy, s, fontsize=size, fontweight="bold", va="bottom", ha="left")
     fig._panel_labels = []
 
 
@@ -137,7 +137,7 @@ def fig_bg(d, num_odours=10):
     for ax in axes[1, :]:
         ax.set_xlabel(r"Common input $/\;\sigma^2_\mathrm{eff}$ (a.u.)", fontsize=12)
     fig.tight_layout(h_pad=1.6)          # row gap just clears the D-F panel letters
-    _flush_labels(fig)
+    _flush_labels(fig, size=14.6)
     return fig
 
 
