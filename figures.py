@@ -155,8 +155,8 @@ def fig_bg(d, num_odours=10):
 
 def fig_resp_dists(d):
     """Model odour-response distribution (A) and odour response vs. baseline (B).
-    The red line in B is the slope predicted by ``_resp_slope`` (no fitting); open
-    circles are the per-cell means, which it passes through."""
+    The red line in B is the slope predicted by ``_resp_slope`` (no fitting); black-
+    outlined points are the per-cell means, which it passes through."""
     bl, od = responses(d)
     fig = plt.figure(figsize=(7.5, 3.2))
     axA = fig.add_axes([0.09, 0.17, 0.33, 0.74])         # model histogram
@@ -166,9 +166,9 @@ def fig_resp_dists(d):
     axA.set_xlabel("Odour-evoked response (a.u.)"); axA.set_ylabel("# observed", labelpad=-2)
     _label(axA, "A")
     axB = fig.add_axes([0.57, 0.17, 0.38, 0.74])         # response vs. baseline
-    axB.plot(bl, od, "o", markersize=3, zorder=1); P.spines_off(axB)
+    axB.plot(bl, od, "o", markersize=3, alpha=0.45, mew=0, zorder=1); P.spines_off(axB)
     blc, odc = d.bl_resps[-10:, :].mean(0), d.od_resps[-10:, :].mean(0)  # per-cell means
-    axB.plot(blc, odc, "o", mfc="none", mec="k", ms=5, zorder=2)
+    axB.plot(blc, odc, "o", color="C0", mec="k", mew=0.6, ms=5, zorder=2) # cell means (line on top)
     s = _resp_slope(d)                                   # predicted slope, no fitting
     xl = axB.get_xlim()
     axB.plot(list(xl), [s * xl[0], s * xl[1]], "-", color="crimson", lw=1.8, zorder=3)
