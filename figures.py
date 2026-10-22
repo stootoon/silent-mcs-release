@@ -10,9 +10,36 @@ import matplotlib.pyplot as plt
 import plotting as P
 
 
-def _label(ax, s):
-    ax.text(-0.04, 1.0, s, transform=ax.transAxes, fontsize=14,
-            fontweight="bold", va="bottom", ha="right")
+def _label(ax, s, top=None):
+    """Queue a panel letter for ``ax``; drawn by ``_flush_labels``. ``top`` is the
+    letter's baseline in figure fractions (default: top of the axes)."""
+    fig = ax.figure
+    if not hasattr(fig, "_panel_labels"):
+        fig._panel_labels = []
+    fig._panel_labels.append((ax, s, top))
+
+
+def _flush_labels(fig, row_tol=0.08):
+    """Draw queued panel letters at the top-left of each panel: left-aligned with
+    the panel's outer left edge (tick labels and axis label included), and raised
+    above any tick/axis label that pokes out of the top. Letters in the same row
+    share a common height."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    inv = fig.transFigure.inverted()
+    placed = []
+    for ax, s, top in getattr(fig, "_panel_labels", []):
+        x0 = ax.get_tightbbox(r).transformed(inv).x0
+        y = ax.get_position().y1 if top is None else top
+        yb = ax.yaxis.get_tightbbox(r)
+        if yb is not None:
+            y = max(y, yb.transformed(inv).y1)
+        placed.append([x0, y, s])
+    for p in placed:                                     # align letters row-wise
+        p[1] = max(q[1] for q in placed if abs(q[1] - p[1]) < row_tol)
+    for x0, y, s in placed:
+        fig.text(x0, y, s, fontsize=14, fontweight="bold", va="bottom", ha="left")
+    fig._panel_labels = []
 
 
 def responses(d, num_odours=10):
@@ -97,8 +124,7 @@ def fig_bg(d, num_odours=10):
         ax.set_xlim(-XL, XL); ax.set_ylim(-YL, YL)
         ax.set_xticks([-4, -2, 0, 2, 4]); ax.set_yticks([-2, 0, 2])
         P.spines_off(ax); ax.tick_params(labelsize=11)
-        ax.text(0.03, 0.97, letter, transform=ax.transAxes, fontsize=13,
-                fontweight="bold", va="top", ha="left")
+        _label(ax, letter)
         ax.text(0.04, 0.05, lab, transform=ax.transAxes, fontsize=12, va="bottom", ha="left")
         ax.text(0.97, 0.90, f"slope\n{slope:.2f}", transform=ax.transAxes, fontsize=9,
                 color="crimson", va="top", ha="right", linespacing=0.9)
@@ -110,7 +136,8 @@ def fig_bg(d, num_odours=10):
         ax.set_ylabel("Baseline activity (a.u.)", fontsize=12)
     for ax in axes[1, :]:
         ax.set_xlabel(r"Common input $/\;\sigma^2_\mathrm{eff}$ (a.u.)", fontsize=12)
-    fig.tight_layout()
+    fig.tight_layout(h_pad=1.6)          # row gap just clears the D-F panel letters
+    _flush_labels(fig)
     return fig
 
 
@@ -139,6 +166,7 @@ def fig_resp_dists(d):
     axB.set_xlabel("Baseline (a.u.)"); axB.set_ylabel("Odour-evoked response (a.u.)")
     _label(axB, "B")
     print(f"  rho(baseline, odour-evoked) = {np.corrcoef(bl, od)[0, 1]:+.3f}")
+    _flush_labels(fig)
     return fig
 
 

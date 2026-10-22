@@ -128,11 +128,13 @@ def fig_learning(d=None):
         sl = slice(on - n_pre, on + n_post)
         return t[sl] - t[on], sl
 
-    fig = plt.figure(figsize=(6.6, 4.1))
-    # three rows: Odour compressed (~40%), GC, MC; spacer rows for an even gap.
-    gs = GridSpec(5, 4, height_ratios=[0.4, 0.18, 1, 0.16, 1],
-                  hspace=0.0, wspace=0.16, left=0.12, right=0.98, top=0.90, bottom=0.12)
+    fig = plt.figure(figsize=(6.6, 4.4))
+    # three rows: Odour compressed (~40%), GC, MC; spacer rows hold the per-panel
+    # time ticks.
+    gs = GridSpec(5, 4, height_ratios=[0.4, 0.22, 1, 0.22, 1],
+                  hspace=0.0, wspace=0.16, left=0.115, right=0.98, top=0.92, bottom=0.12)
     row_lab = {0: "Odour", 2: "GC", 4: "MC"}
+    block_ax = {}       # left-column axis of each plot row, for A/B/C labels
 
     def ylab(ax, r, j):
         if j == 0:
@@ -146,9 +148,11 @@ def fig_learning(d=None):
         ax.fill_between([0, 1], 0, COMMON_CONC, color=C_COMMON)
         ax.fill_between([0, 1], COMMON_CONC, COMMON_CONC + UNIQUE_CONC, color=band_col)
         ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(0, COMMON_CONC + UNIQUE_CONC + 0.15)
-        P.spines_off(ax); ax.set_yticks([0, 2]); _xticks(ax, False)
+        P.spines_off(ax); ax.set_yticks([0, 2]); _xticks(ax, True, axislabel=False)
         if j: ax.set_yticklabels([])
         ax.set_title(f"presentation {k_of[on]}", fontsize=9); ylab(ax, 0, j)
+        if j == 0:
+            block_ax[0] = ax
 
         # row 2: granule cells (common tan + this odour's unique), same as dynamics
         ax = fig.add_subplot(gs[2, j])
@@ -156,10 +160,12 @@ def fig_learning(d=None):
         ax.plot(tr, d.x[sl][:, jc], color=C_COMMON, lw=2, zorder=2)        # common
         ax.plot(tr, d.x[sl][:, juni], color=uni_trace, lw=2, zorder=3)     # unique
         ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(GC_YL)
-        P.spines_off(ax); _xticks(ax, False); ax.set_yticks([0, 1])
+        P.spines_off(ax); _xticks(ax, True, axislabel=False); ax.set_yticks([0, 1])
         if j: ax.set_yticklabels([])
-        if j == 0 and gc_left is None:
-            gc_left = ax
+        if j == 0:
+            if gc_left is None:
+                gc_left = ax
+            block_ax[2] = ax
         ylab(ax, 2, j)
 
         # row 4: mitral cells -- companions grey/thin behind, followed cell dark green/thick
@@ -172,7 +178,7 @@ def fig_learning(d=None):
         P.spines_off(ax); _xticks(ax, True); ax.set_yticks([-2, 0, 2])
         if j: ax.set_yticklabels([])
         if j == 0:
-            mc_left.append(ax); ax.tick_params(axis="y", pad=1.5)
+            mc_left.append(ax); block_ax[4] = ax; ax.tick_params(axis="y", pad=1.5)
         ylab(ax, 4, j)
 
     # align MC row label with the GC label (as the dynamics figure does)
@@ -181,6 +187,12 @@ def fig_learning(d=None):
     xg_axes = gc_left.transAxes.inverted().transform((xg_disp, 0.0))[0]
     for ax in mc_left:
         ax.yaxis.set_label_coords(xg_axes, 0.5)
+    # panel letters: A = Odour, B = GC, C = MC. A sits above the odour row (clear of
+    # its label); B and C are centred on the tops of their plots.
+    for r0, letter, va, dy in [(0, "A", "bottom", 0.013), (2, "B", "center", 0.0),
+                               (4, "C", "center", 0.0)]:
+        fig.text(0.030, block_ax[r0].get_position().y1 + dy, letter, fontsize=15,
+                 fontweight="bold", va=va, ha="left")
     return fig
 
 

@@ -45,13 +45,15 @@ def _odour_pat_col(i, Pn):
     return TRACE_COLOURS[(i - 1) % len(TRACE_COLOURS)]
 
 
-def _xticks(ax, labels):
-    """Ticks at odour onset (0) and offset (1); number labels + 'Time (sec.)'
-    only on labelled rows."""
+def _xticks(ax, labels, axislabel=None):
+    """Ticks at odour onset (0) and offset (1). ``labels`` shows the 0/1 numbers;
+    ``axislabel`` (defaults to ``labels``) adds the 'Time (sec.)' caption."""
+    if axislabel is None:
+        axislabel = labels
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["0", "1"] if labels else [])
     ax.tick_params(axis="x", labelsize=8, length=3)
-    if labels:
+    if axislabel:
         ax.set_xlabel("Time (sec.)", fontsize=9, labelpad=1)
 
 
@@ -86,13 +88,14 @@ def fig_dynamics(d=None):
     # shades of green: MC identity is deliberately unrelated to the odour palette
     mc_colours = ["#1b5e20", "#43a047", "#81c784"]
 
-    fig = plt.figure(figsize=(6.6, 6.4))
+    fig = plt.figure(figsize=(6.6, 5.75))
     # plot rows at 0,2,4,6,8; spacer rows 1,3,5,7 set uneven gaps -- small within an
     # early/late block (GC<->MC, so they read as a pair), larger between blocks
-    # (room for the Time (sec.) labels).
-    gs = GridSpec(9, 4, height_ratios=[1, 0.62, 1, 0.16, 1, 0.62, 1, 0.16, 1],
-                  hspace=0.0, wspace=0.16, left=0.11, right=0.98, top=0.96, bottom=0.07)
-    row_lab = ["Odour", "GC (early)", "MC (early)", "GC (late)", "MC (late)"]
+    # (room for the Time (sec.) labels). The odour row (0) is compressed.
+    gs = GridSpec(9, 4, height_ratios=[0.4, 0.41, 1, 0.22, 1, 0.48, 1, 0.22, 1],
+                  hspace=0.0, wspace=0.16, left=0.115, right=0.98, top=0.96, bottom=0.08)
+    block_ax = {}       # left-column axis of each plot row, for EARLY/LATE block labels
+    row_lab = ["Odour", "GC", "MC", "GC", "MC"]      # early/late conveyed by block labels
 
     def snippet(on):
         sl = slice(on - n_pre, on + n_post)
@@ -112,9 +115,11 @@ def fig_dynamics(d=None):
         ax.fill_between([0, 1], COMMON_CONC, COMMON_CONC + UNIQUE_CONC,
                         color=ODOUR_COLOURS[o - 1])
         ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(0, COMMON_CONC + UNIQUE_CONC + 0.15)
-        P.spines_off(ax); ax.set_yticks([0, 1, 2]); _xticks(ax, True)
+        P.spines_off(ax); ax.set_yticks([0, 2]); _xticks(ax, True, axislabel=False)
         if j: ax.set_yticklabels([])
         ax.set_title(f"odour {o}", fontsize=9); ylab(ax, 0, j)
+        if j == 0:
+            block_ax[0] = ax
 
         for src, r_gc, r_mc, lg, lm in [(early, 2, 4, 1, 2), (late, 6, 8, 3, 4)]:
             tr, sl = snippet(src[o])
@@ -126,10 +131,12 @@ def fig_dynamics(d=None):
             ax.plot(tr, d.x[sl][:, jc], color=C_COMMON, lw=2, zorder=2)          # common
             ax.plot(tr, d.x[sl][:, juni[o]], color=TRACE_COLOURS[o - 1], lw=2, zorder=3)  # unique
             ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(GC_YL)
-            P.spines_off(ax); _xticks(ax, False); ax.set_yticks([0, 1])
+            P.spines_off(ax); _xticks(ax, True, axislabel=False); ax.set_yticks([0, 1])
             if j: ax.set_yticklabels([])
-            if j == 0 and gc_left is None:
-                gc_left = ax
+            if j == 0:
+                if gc_left is None:
+                    gc_left = ax
+                block_ax[r_gc] = ax
             ylab(ax, lg, j)
             # mitral cells
             ax = fig.add_subplot(gs[r_mc, j])
@@ -137,10 +144,11 @@ def fig_dynamics(d=None):
             for w, c in zip(which_la, mc_colours):
                 ax.plot(tr, d.la[sl][:, w], lw=1.2, color=c)
             ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(MC_YL)
-            P.spines_off(ax); _xticks(ax, True); ax.set_yticks([-2, 0, 2])
+            P.spines_off(ax); _xticks(ax, True, axislabel=(r_mc == 8)); ax.set_yticks([-2, 0, 2])
             if j: ax.set_yticklabels([])
             if j == 0:
                 mc_left.append(ax)
+                block_ax[r_mc] = ax
                 ax.tick_params(axis="y", pad=1.5)   # shift numbers in; -2 clears the label
             ylab(ax, lm, j)
     # move only the MC row labels in to line up with the GC labels (MC tick labels
@@ -150,6 +158,20 @@ def fig_dynamics(d=None):
     xg_axes = gc_left.transAxes.inverted().transform((xg_disp, 0.0))[0]
     for ax in mc_left:
         ax.yaxis.set_label_coords(xg_axes, 0.5)
+    # bold EARLY / LATE block labels in the left margin, rotated, each spanning its
+    # GC+MC pair (rows 2-4 and 6-8).
+    for (r_top, r_bot), name in [((2, 4), "EARLY"), ((6, 8), "LATE")]:
+        y_top = block_ax[r_top].get_position().y1
+        y_bot = block_ax[r_bot].get_position().y0
+        fig.text(0.050, 0.5 * (y_top + y_bot), name, rotation=90, fontsize=10,
+                 fontweight="bold", va="center", ha="center")
+    # panel letters: A = Odour row, B = Early block, C = Late block. A sits above
+    # the odour row (clear of its label); B and C are centred on the tops of their
+    # GC plots.
+    for r0, letter, va, dy in [(0, "A", "bottom", 0.013), (2, "B", "center", 0.0),
+                               (6, "C", "center", 0.0)]:
+        fig.text(0.038, block_ax[r0].get_position().y1 + dy, letter, fontsize=15,
+                 fontweight="bold", va=va, ha="left")
     return fig
 
 
