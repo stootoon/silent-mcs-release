@@ -113,9 +113,9 @@ def plot_bl_vs_od(bl_resps, od_resps, num_odours=10, fig_size=(8, 3.5), pcs=(0, 
     hist(od_mean, linspace(-2, 2, 31), color="w", ec="C0"); spines_off()
     gca().set_yticks([pci / 100. * len(od_mean) for pci in pcs])
     gca().set_yticklabels([f"{pci}%" for pci in pcs])
-    xlabel("Odour-evoked response (V)"); ylabel("# observed", labelpad=-2)
+    xlabel("Odour-evoked response (a.u.)"); ylabel("# observed", labelpad=-2)
     subplot(2, 2, (2, 4)); plot(bl_mean, od_mean, "o", markersize=3)
-    xlabel("Baseline (V)"); ylabel("Odour-evoked response (V)")
+    xlabel("Baseline (a.u.)"); ylabel("Odour-evoked response (a.u.)")
     ylim(-2, 2); gca().set_yticks([-2, -1, 0, 1, 2]); spines_off()
     tight_layout(w_pad=0, h_pad=0)
     print(f"  rho(baseline, odour-evoked) = {corrcoef(bl_mean, od_mean)[0, 1]:+.3f}")
@@ -151,7 +151,7 @@ def plot_resp_voltage_by_pre_voltage(bl_mean, od_mean, th=None, fig_size=(1.5, 2
     ylim(yl[0], yb * 1.18)
     spines_off(which=["top", "bottom", "right"])
     xlabel("Pre-odour voltage", fontsize=lab_font_size)
-    ylabel("Odour response (V)", fontsize=lab_font_size)
+    ylabel("Odour response (a.u.)", fontsize=lab_font_size)
     gca().xaxis.set_tick_params(width=0)
     gca().tick_params(axis="both", which="major", labelsize=12)
 
@@ -182,7 +182,7 @@ def plot_cdf(bl_mean, od_mean, pcs=None, fig_size=(2.8, 3), ax=None):
     [plot(xlim(), [y, y], "--", color="gray", linewidth=0.5) for y in [0, 1]]
     plot([0, 0], [-0.06, 1], "--", color="gray", linewidth=0.5)
     ylim(-0.06, 1.0)                               # x-axis spine sits below the 0% line
-    xlabel("Odour-evoked response\n(V)", fontsize=12); spines_off()
+    xlabel("Odour-evoked response\n(a.u.)", fontsize=12); spines_off()
     gca().tick_params(axis="both", which="major", labelsize=12)
 
 

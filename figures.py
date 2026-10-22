@@ -102,12 +102,14 @@ def fig_bg(d, num_odours=10):
         ax.text(0.04, 0.05, lab, transform=ax.transAxes, fontsize=12, va="bottom", ha="left")
         ax.text(0.97, 0.90, f"slope\n{slope:.2f}", transform=ax.transAxes, fontsize=9,
                 color="crimson", va="top", ha="right", linespacing=0.9)
+        ax.text(0.97, 0.68, f"fit\n{np.polyfit(bg, y, 1)[0]:.2f}", transform=ax.transAxes,
+                fontsize=9, color="k", va="top", ha="right", linespacing=0.9)
     axes.flat[0].legend(loc="lower left", bbox_to_anchor=(0.03, 0.13), fontsize=9,
                         frameon=False, handlelength=1.2)
     for ax in axes[:, 0]:
-        ax.set_ylabel("Baseline activity (V)", fontsize=12)
+        ax.set_ylabel("Baseline activity (a.u.)", fontsize=12)
     for ax in axes[1, :]:
-        ax.set_xlabel(r"Common input $/\;\sigma^2_\mathrm{eff}$ (V)", fontsize=12)
+        ax.set_xlabel(r"Common input $/\;\sigma^2_\mathrm{eff}$ (a.u.)", fontsize=12)
     fig.tight_layout()
     return fig
 
@@ -122,7 +124,7 @@ def fig_resp_dists(d):
     axA.hist(od, np.linspace(-2, 2, 31), color="w", ec="C0"); P.spines_off(axA)
     axA.set_yticks([p / 100. * len(od) for p in (0, 5, 10)])
     axA.set_yticklabels(["0%", "5%", "10%"])
-    axA.set_xlabel("Odour-evoked response (V)"); axA.set_ylabel("# observed", labelpad=-2)
+    axA.set_xlabel("Odour-evoked response (a.u.)"); axA.set_ylabel("# observed", labelpad=-2)
     _label(axA, "A")
     axB = fig.add_axes([0.57, 0.17, 0.38, 0.74])         # response vs. baseline
     axB.plot(bl, od, "o", markersize=3, zorder=1); P.spines_off(axB)
@@ -134,7 +136,7 @@ def fig_resp_dists(d):
     axB.set_xlim(xl)
     axB.text(0.96, 0.96, f"slope\n{s:.2f}", transform=axB.transAxes, fontsize=9,
              color="crimson", va="top", ha="right", linespacing=0.9)
-    axB.set_xlabel("Baseline (V)"); axB.set_ylabel("Odour-evoked response (V)")
+    axB.set_xlabel("Baseline (a.u.)"); axB.set_ylabel("Odour-evoked response (a.u.)")
     _label(axB, "B")
     print(f"  rho(baseline, odour-evoked) = {np.corrcoef(bl, od)[0, 1]:+.3f}")
     return fig
@@ -239,7 +241,7 @@ def fig_spikes(d, rate_mul=0.062, seed=1):
     P.plot_spikes(ds.t_full, ds.la, ds.which_pat, ds.stim_inds, which_stim, cells=cells,
                   t_rng=T_RNG, rate_mul=rate_mul, seed=seed, spike_h=0.55,
                   set_ylim=True, ax=ax)
-    ax.text(0.5, -0.02, "Odor", transform=ax.transAxes, ha="center", va="top", fontsize=11)
+    ax.text(0.5, -0.02, "Odour", transform=ax.transAxes, ha="center", va="top", fontsize=11)
     return fig
 
 

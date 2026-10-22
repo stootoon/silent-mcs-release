@@ -3,7 +3,7 @@
 Code to reproduce the modelling figures of
 
 > Tootoonian, Kollo & Schaefer, *"'Silent' mitral cells emerge from common
-> feature subtraction."* (preprint: **TODO — add URL**)
+> feature subtraction."* (code: https://github.com/stootoon/silent-mcs-release)
 
 The model explains the inverse relationship between mitral/tufted-cell baseline
 activity and odour responses as a consequence of **common feature subtraction**
