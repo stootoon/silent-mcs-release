@@ -158,13 +158,13 @@ def fig_dynamics(d=None):
     xg_axes = gc_left.transAxes.inverted().transform((xg_disp, 0.0))[0]
     for ax in mc_left:
         ax.yaxis.set_label_coords(xg_axes, 0.5)
-    # bold EARLY / LATE block labels in the left margin, rotated, each spanning its
-    # GC+MC pair (rows 2-4 and 6-8).
+    # EARLY / LATE in the left margin, rotated, each spanning its GC+MC pair
+    # (rows 2-4 and 6-8); regular-weight italic, quieter than the bold letters.
     for (r_top, r_bot), name in [((2, 4), "EARLY"), ((6, 8), "LATE")]:
         y_top = block_ax[r_top].get_position().y1
         y_bot = block_ax[r_bot].get_position().y0
         fig.text(0.050, 0.5 * (y_top + y_bot), name, rotation=90, fontsize=10,
-                 fontweight="bold", fontstyle="italic", va="center", ha="center")
+                 fontstyle="italic", va="center", ha="center")
     # panel letters: A = Odour row, B = Early block, C = Late block. A sits above
     # the odour row (clear of its label); B and C are centred on the tops of their
     # GC plots.
