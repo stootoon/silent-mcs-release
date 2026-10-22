@@ -140,7 +140,7 @@ def fig_dynamics(d=None):
             ylab(ax, lg, j)
             # mitral cells
             ax = fig.add_subplot(gs[r_mc, j])
-            ax.axhline(0, color="gray", lw=0.5)
+            ax.axhline(0, color="k", lw=0.5, ls=":", zorder=0)   # zero reference
             for w, c in zip(which_la, mc_colours):
                 ax.plot(tr, d.la[sl][:, w], lw=1.2, color=c)
             ax.set_xlim(-T_PRE, T_POST); ax.set_ylim(MC_YL)

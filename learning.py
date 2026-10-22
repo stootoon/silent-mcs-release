@@ -170,7 +170,7 @@ def fig_learning(d=None):
 
         # row 4: mitral cells -- companions grey/thin behind, followed cell dark green/thick
         ax = fig.add_subplot(gs[4, j])
-        ax.axhline(0, color="gray", lw=0.5)
+        ax.axhline(0, color="k", lw=0.5, ls=":", zorder=0)   # zero reference
         for c in companions:
             ax.plot(tr, d.la[sl][:, c], lw=0.9, color=COMPANION_COLOUR, zorder=2)
         ax.plot(tr, d.la[sl][:, follow], lw=2.0, color=FOLLOW_COLOUR, zorder=3)

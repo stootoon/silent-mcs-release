@@ -166,11 +166,11 @@ def plot_cdf(bl_mean, od_mean, pcs=None, fig_size=(2.8, 3), ax=None):
     iflag = bl_mean >= bl_pc[-1]
     vals = od_mean[iflag]
     plot(sorted(vals), arange(len(vals)) / len(vals), linewidth=2, color="k",
-         label=f"$\\geq {bl_pc[-1]:2.1f}$ V")
+         label=f"$\\geq {bl_pc[-1]:2.1f}$ a.u.")
     for i, blm in enumerate(reversed(bl_pc)):
         frac = mean(bl_mean < blm)
         col = set_alpha(new_cmap(1 - frac), 1)
-        label = f"$< {blm:2.1f}$ V" if (not mod(i, 2) and abs(blm - 0.2) > 0.3) else ""
+        label = f"$< {blm:2.1f}$ a.u." if (not mod(i, 2) and abs(blm - 0.2) > 0.3) else ""
         vals = od_mean[bl_mean < blm].flatten()
         plot(sorted(vals), arange(len(vals)) / len(vals), linewidth=2, color=col, label=label)
     legend(loc=(0.65, 0.05), frameon=False, labelspacing=0, fontsize=10,

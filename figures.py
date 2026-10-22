@@ -118,7 +118,7 @@ def fig_bg(d, num_odours=10):
     for ax, (lab, bg, y, slope), letter in zip(axes.flat, results, "ABCDEF"):
         ax.plot([-XL, XL], [0, 0], "-", color="gray", lw=0.8)
         ax.plot([0, 0], [-YL, YL], "-", color="gray", lw=0.8)
-        ax.plot(bg, y, "o", color="dodgerblue", markersize=2.5)
+        ax.plot(bg, y, "o", color="dodgerblue", markersize=2.5, zorder=2)
         ax.plot([-XL, XL], [-XL * slope, XL * slope], "-", color="crimson", lw=1.8,
                 label="prediction")
         ax.set_xlim(-XL, XL); ax.set_ylim(-YL, YL)
@@ -128,8 +128,20 @@ def fig_bg(d, num_odours=10):
         ax.text(0.04, 0.05, lab, transform=ax.transAxes, fontsize=12, va="bottom", ha="left")
         ax.text(0.97, 0.90, f"slope\n{slope:.2f}", transform=ax.transAxes, fontsize=9,
                 color="crimson", va="top", ha="right", linespacing=0.9)
-        ax.text(0.97, 0.68, f"fit\n{np.polyfit(bg, y, 1)[0]:.2f}", transform=ax.transAxes,
+        ax.text(0.97, 0.775, f"fit\n{np.polyfit(bg, y, 1)[0]:.2f}", transform=ax.transAxes,
                 fontsize=9, color="k", va="top", ha="right", linespacing=0.9)
+    # ungated control in panel D: the same n_air=5 run with the baseline update
+    # applied at all times, not only during odour (see the paper's Discussion).
+    du = SilentMcs(**{**base, **panels[3][1]}, gated=False).compute(dt=d.dt,
+                                                                    randomize_trials=False)
+    blu = du.bl_resps[-num_odours:, :]
+    bgu = np.outer(np.ones(blu.shape[0]), du.bg_odour).flatten() / du.sd2_eff
+    fit_u = np.polyfit(bgu, blu.flatten(), 1)[0]
+    print(f"  {'ungated n_air=5':18s} emp={fit_u:+.3f}")
+    axD = axes.flat[3]
+    axD.plot(bgu, blu.flatten(), "o", color="gray", alpha=0.6, markersize=2.5, zorder=1.5)
+    axD.text(0.97, 0.65, f"ungated fit\n{fit_u:.2f}", transform=axD.transAxes, fontsize=9,
+             color="gray", va="top", ha="right", linespacing=0.9)
     axes.flat[0].legend(loc="lower left", bbox_to_anchor=(0.03, 0.13), fontsize=9,
                         frameon=False, handlelength=1.2)
     for ax in axes[:, 0]:

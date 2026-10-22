@@ -47,6 +47,7 @@ class SilentMcs(Computation):
                  tau_la = 0.050,
                  tau_v = 0.025,
                  randomize_trials = True,
+                 gated = True,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -74,6 +75,7 @@ class SilentMcs(Computation):
         self.eta = eta
         self.tau_la = tau_la
         self.tau_v = tau_v
+        self.gated = gated      # baseline update only during odour (False: at all times)
 
     def _setup_odours(self, randomize_trials = True):
         print("Setting up odours")
@@ -234,7 +236,8 @@ class SilentMcs(Computation):
 
             dladt = (-la[i] + (y - self.A @ x + b[i]) / self.sd2_eff) / self.tau_la
             dvdt  = (-v[i] + self.A.T @ la[i]) / self.tau_v
-            dbdt  = (-b[i] - in_odour * self.ka * la[i]) / self.tau_b
+            gate  = in_odour if self.gated else 1.0
+            dbdt  = (-b[i] - gate * self.ka * la[i]) / self.tau_b
 
             la[i+1] = la[i] + dladt * self.dt
             b[i+1]  = b[i]  + (dbdt  * self.dt) * (i > self.activation_index)
