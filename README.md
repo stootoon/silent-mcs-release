@@ -34,6 +34,7 @@ This runs the model once and writes:
 | name (`--only`) | file | contents |
 |---|---|---|
 | `dynamics`   | `dynamics.pdf`   | granule- and mitral-cell responses to four odours, early vs. late |
+| `learning`   | `learning.pdf`   | one mitral cell followed over four presentations as its baseline is learned |
 | `bg`         | `bg.pdf`         | common input vs. mitral-cell baseline, with the predicted slope |
 | `resp_dists` | `resp_dists.pdf` | odour-response distribution, and response vs. baseline with the predicted slope |
 | `whiskers`   | `whiskers.pdf`   | odour responses grouped by pre-odour voltage |
@@ -51,6 +52,7 @@ the model parameters with no fitting (`figures._bg_slope`, `figures._resp_slope`
 | `plotting.py` | model-agnostic plotting primitives (traces, distributions, rasters). |
 | `figures.py`  | one builder per figure; `FIGURES` maps names → files. |
 | `dynamics.py` | the early/late granule/mitral dynamics figure (`dynamics`). |
+| `learning.py` | the single-cell learning figure (`learning`), sibling of `dynamics`. |
 | `driver.py`   | runs the model and saves every figure. |
 
 ## Notes

@@ -252,6 +252,13 @@ def _dynamics(d=None):
     return fig_dynamics()
 
 
+def _learning(d=None):
+    """One mitral cell followed through learning. Runs its own four-odour model,
+    so it ignores the shared ``d``. Imported lazily to avoid a driver import cycle."""
+    from learning import fig_learning
+    return fig_learning()
+
+
 # name -> (builder, output filename)
 FIGURES = {
     "bg":         (fig_bg,         "bg.pdf"),
@@ -260,4 +267,5 @@ FIGURES = {
     "cdfs":       (fig_cdfs,       "cdfs.pdf"),
     "spikes":     (fig_spikes,     "spikes.pdf"),
     "dynamics":   (_dynamics,      "dynamics.pdf"),
+    "learning":   (_learning,      "learning.pdf"),
 }
